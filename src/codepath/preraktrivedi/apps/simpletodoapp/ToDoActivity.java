@@ -8,12 +8,14 @@ import org.apache.commons.io.FileUtils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -23,7 +25,8 @@ import android.widget.Toast;
 public class ToDoActivity extends Activity {
 
 	private static final String TAG = ToDoActivity.class.getSimpleName();
-	private final String FILENAME = "todo.txt";
+	private static final String FILENAME = "todo.txt";
+	private static final int REQUEST_CODE = 100;
 	private ArrayList<String> items;
 	private ArrayAdapter<String> itemsAdapter;
 	private ListView listView;
@@ -60,6 +63,7 @@ public class ToDoActivity extends Activity {
 	}
 
 	private void saveItems() {
+		itemsAdapter.notifyDataSetChanged();  //This notifies adapter that list has changed
 		File todoFile = new File(getFilesDir(), FILENAME);
 		try {
 			FileUtils.writeLines(todoFile, items);
@@ -70,7 +74,6 @@ public class ToDoActivity extends Activity {
 
 	private void setupListViewListener() {
 		listView.setOnItemLongClickListener(new OnItemLongClickListener() {
-
 			@Override
 			public boolean onItemLongClick(AdapterView<?> viewIn, View item,
 					int pos, long id) {
@@ -78,6 +81,17 @@ public class ToDoActivity extends Activity {
 				itemsAdapter.notifyDataSetChanged();
 				saveItems();
 				return true;
+			}
+		});
+
+		/** Supports Edit Action **/
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
+				Intent editActivity = new Intent(ToDoActivity.this, EditItemActivity.class);
+				editActivity.putExtra("item_to_edit_text", items.get(pos));
+				editActivity.putExtra("item_to_edit_position", pos);
+				startActivityForResult(editActivity, REQUEST_CODE);
 			}
 		});
 	}
@@ -96,7 +110,6 @@ public class ToDoActivity extends Activity {
 		case R.id.action_clearitems:
 			if(items != null && items.size() > 0) {
 				items.clear();
-				itemsAdapter.notifyDataSetChanged();
 				saveItems();
 				Toast.makeText(ToDoActivity.this, "Cleared List", Toast.LENGTH_SHORT).show();
 			} else {
@@ -115,8 +128,19 @@ public class ToDoActivity extends Activity {
 		if(etString.length() > 0) {
 			itemsAdapter.add(etString);
 			etAddItem.setText("");
+			saveItems();
 		} else {
 			Toast.makeText(context, "Please add some text", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+			String updatedItem = data.getExtras().getString("updated_item_text");
+			int position = data.getExtras().getInt("updated_item_position");
+			items.set(position, updatedItem);  //update item in list
+			saveItems();
 		}
 	}
 
