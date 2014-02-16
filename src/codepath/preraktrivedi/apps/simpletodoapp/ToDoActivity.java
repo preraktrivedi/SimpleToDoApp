@@ -43,10 +43,7 @@ public class ToDoActivity extends Activity {
 		items = readItems();
 		itemsAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, items);
 		listView.setAdapter(itemsAdapter);
-		items.add("Sample Item 1");
-		items.add("Sample Item 2");
 		setupListViewListener();
-
 	}
 
 	private ArrayList<String> readItems() {
@@ -54,6 +51,10 @@ public class ToDoActivity extends Activity {
 		File todoFile = new File(getFilesDir(), FILENAME);
 		try {
 			itemList = new ArrayList<String>(FileUtils.readLines(todoFile, "UTF-8"));
+			if(itemList != null && itemList.size() < 1) {
+				itemList.add("Sample Item 1");
+				itemList.add("Sample Item 2");
+			}
 		} catch (IOException e) {
 			itemList = new ArrayList<String>();
 			Log.e(TAG, "I/O Error: \n" + e.getMessage());
