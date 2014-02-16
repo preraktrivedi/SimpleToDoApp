@@ -24,7 +24,7 @@
         android:layout_below="@+id/lv_items"
         android:layout_marginTop="14dp"
         android:ems="10"
-        android:hint="Enter New Item" />
+        android:hint="@string/new_item" />
 
     <Button
         android:id="@+id/bt_add_item"
@@ -34,7 +34,7 @@
         android:layout_alignBottom="@+id/et_new_item"
         android:layout_alignRight="@+id/lv_items"
         android:background="#F2B701"
-        android:text="Add"
+        android:text="@string/bt_add_item"
         android:textColor="#FFFFFF"
         android:onClick="addToDoItem"
         android:textSize="14sp"

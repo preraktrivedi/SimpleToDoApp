@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -28,26 +29,26 @@ public class ToDoActivity extends Activity {
 	private ListView listView;
 	private EditText etAddItem;
 	private Context context;
-	
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_to_do);
-        context = this;
-        listView = (ListView) findViewById(R.id.lv_items);
-        etAddItem = (EditText) findViewById(R.id.et_new_item);
-        items = readItems();
-        itemsAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, items);
-        listView.setAdapter(itemsAdapter);
-        items.add("First Item");
-        items.add("Second Item");
-        setupListViewListener();
-        
-    }
 
-    private ArrayList<String> readItems() {
-    	ArrayList<String> itemList;
-    	File todoFile = new File(getFilesDir(), FILENAME);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_to_do);
+		context = this;
+		listView = (ListView) findViewById(R.id.lv_items);
+		etAddItem = (EditText) findViewById(R.id.et_new_item);
+		items = readItems();
+		itemsAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, items);
+		listView.setAdapter(itemsAdapter);
+		items.add("Sample Item 1");
+		items.add("Sample Item 2");
+		setupListViewListener();
+
+	}
+
+	private ArrayList<String> readItems() {
+		ArrayList<String> itemList;
+		File todoFile = new File(getFilesDir(), FILENAME);
 		try {
 			itemList = new ArrayList<String>(FileUtils.readLines(todoFile, "UTF-8"));
 		} catch (IOException e) {
@@ -57,8 +58,8 @@ public class ToDoActivity extends Activity {
 		}
 		return itemList;
 	}
-    
-    private void saveItems() {
+
+	private void saveItems() {
 		File todoFile = new File(getFilesDir(), FILENAME);
 		try {
 			FileUtils.writeLines(todoFile, items);
@@ -68,7 +69,7 @@ public class ToDoActivity extends Activity {
 	}
 
 	private void setupListViewListener() {
-    	listView.setOnItemLongClickListener(new OnItemLongClickListener() {
+		listView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
 			public boolean onItemLongClick(AdapterView<?> viewIn, View item,
@@ -79,23 +80,44 @@ public class ToDoActivity extends Activity {
 				return true;
 			}
 		});
-    }
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.to_do, menu);
-        return true;
-    }
-    
-    public void addToDoItem(View v) {
-    	String etString = etAddItem.getText().toString().trim();
-    	if(etString.length() > 0) {
-    		itemsAdapter.add(etString);
-    		etAddItem.setText("");
-    	} else {
-    		Toast.makeText(context, "Please add some text", Toast.LENGTH_SHORT).show();
-    	}
-    }
-    
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.to_do, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+		case R.id.action_clearitems:
+			if(items != null && items.size() > 0) {
+				items.clear();
+				itemsAdapter.notifyDataSetChanged();
+				saveItems();
+				Toast.makeText(ToDoActivity.this, "Cleared List", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(ToDoActivity.this, "List already Empty", Toast.LENGTH_SHORT).show();
+			}
+			return true;
+
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+
+	public void addToDoItem(View v) {
+		String etString = etAddItem.getText().toString().trim();
+		if(etString.length() > 0) {
+			itemsAdapter.add(etString);
+			etAddItem.setText("");
+		} else {
+			Toast.makeText(context, "Please add some text", Toast.LENGTH_SHORT).show();
+		}
+	}
+
 }

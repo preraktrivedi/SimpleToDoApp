@@ -3,6 +3,8 @@
 
     <string name="app_name">Simple ToDo App</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="clear_items">Clear List</string>
+    <string name="bt_add_item">ADD</string>
+    <string name="new_item">Enter New Item</string>
 
 </resources>
